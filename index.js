@@ -25,9 +25,9 @@ function showPortOpen() {
 
 function readSerialData(data) {
   console.log(data[0], data[1]);
-  let x = Number(data[0]);
-  let y = Number(data[1]);
-  robot.moveMouse(x, y);
+  // let x = Number(data[0]);
+  // let y = Number(data[1]);
+  // robot.moveMouse(x, y);
 }
 
 function showPortClose() {
