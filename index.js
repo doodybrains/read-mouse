@@ -9,11 +9,11 @@ var server = express();
 var robot = require("robotjs");
 var myParser = require("body-parser");
 
-// var myPort = new SerialPort(portName, 9600);
+var myPort = new SerialPort(portName, 9600);
 
-// myPort.on('open', showPortOpen);  
-// myPort.on('close', showPortClose);
-// myPort.on('error', showError); 
+myPort.on('open', showPortOpen);  
+myPort.on('close', showPortClose);
+myPort.on('error', showError); 
 // myPort.on('data', readSerialData); 
 
 
@@ -25,6 +25,7 @@ server.use(myParser.urlencoded({extended : true}));
 
 server.post("/posts", function(request, response) {
   console.log(request.body.data);
+  Serial.write('x');
 });
 
 function showPortOpen() {
