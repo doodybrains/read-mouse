@@ -17,9 +17,9 @@ int motorPin = 3;
 void setup(){
   pinMode(motorPin, OUTPUT);
   Serial.begin(9600);  
-  Mouse.begin();
-  while(!Serial);
-  Serial.print("Setup...");
+
+  while(Serial);
+
   oldMouse.begin();
   Mouse.begin();
 }
@@ -31,12 +31,6 @@ void loop() {
   oldMouse.getPosition(stat,x,y);
   
   Mouse.move(x, y, 0);
-
-//  Serial.print(stat);
-//  Serial.print("\tx=");
-//  Serial.print(x, DEC);
-//  Serial.print("\ty=");
-//  Serial.println(y, DEC);
   
   if (stat == 9) {
     Mouse.click();
@@ -46,10 +40,10 @@ void loop() {
 
   if (capitalism == 'x') {
    digitalWrite(3, HIGH);
-   delay(1000);
+   delay(500);
   } else {
     digitalWrite(3, LOW);
   }
 
-  delay(50);  
+  delay(10);  
 }
