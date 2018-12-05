@@ -25,7 +25,7 @@ server.use(myParser.urlencoded({extended : true}));
 
 server.post("/posts", function(request, response) {
   console.log(request.body.data);
-  Serial.write('x');
+  myPort.write('x');
 });
 
 function showPortOpen() {
