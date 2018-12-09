@@ -1,57 +1,62 @@
 /*
-adapted from Simple Serial Server by Tom Igoe
+PS2 Connector Wires
+Green Wire - 5V
+Black Wire - GRND
+Yellow Wire - Clock - Pin 6
+Brown Wire - Data - Pin 5
 */
 
-var SerialPort = require('serialport');		
-var	portName =  "/dev/cu.usbmodemHIDGD1";
-var express = require('express');
-var server = express();	
-var myParser = require("body-parser");
-let myPort;
+#include "PS2Mouse.h"
+#include "Mouse.h"
 
-let opened = false;
+PS2Mouse oldMouse(6,5);
 
-open();
+int count = 0;
+int capitalism;
+int motorPin = 3;
+bool isClicked = false;
 
-server.use( myParser.json());
-server.listen(8080);   
+void setup(){
+  Serial.begin(9600); 
+  pinMode(motorPin, OUTPUT);
+  oldMouse.begin();
+  Mouse.begin();
+}
 
-server.use(myParser.urlencoded({extended : true}));
+void loop() {
+  uint8_t stat;
+  int x,y;
+  int newY;
+  
+  oldMouse.getPosition(stat,x,y);
 
-server.post("/posts", function(request, response) {
-  if (myPort) {
-    console.log(request.body.data);
-    myPort.write('x');
+  if (y < 0) { newY = abs(y); } 
+  if (y > 0) { newY = -y; }
+  if (y == 0) { newY = y; }
+  
+  Mouse.move(x, newY, 0);
+  
+  if (stat == 9 && isClicked == false) {
+    Mouse.click();
+    isClicked = true;    
   }
-});
+  
+  if (stat != 9) { isClicked = false; }
+  
+  if (Serial.available() > 0) {
+    capitalism = Serial.read();
 
-function open() {
-  myPort = new SerialPort(portName, 9600);
-  myPort.on('open', showPortOpen);  
-  myPort.on('close', showPortClose);
-  myPort.on('error', showError); 
-
-  if (!opened) {
-    setTimeout(function() {
-      if (!opened) {
-        open();
+    if (capitalism == 'x') {
+      digitalWrite(3, HIGH);
+      delay(400);
+      digitalWrite(3, LOW);
+      
+      if (count < 1) {
+        Mouse.move(100,100,0);
+        count += 1;
+      } else {
+        count = 0;
       }
-    }, 2000);
+    }
   }
 }
-
-function showPortOpen() {
-  console.log('port open. Data rate: ' + myPort.baudRate);
-  opened = true;
-}
-
-function showPortClose() {
-  console.log('port closed.');
-  opened = false;
-  open();
-}
-
-function showError(error) {
-  console.log('Serial port error: ' + error);
-}
-
