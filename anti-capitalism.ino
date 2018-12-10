@@ -11,23 +11,14 @@ Brown Wire - Data - Pin 5
 
 PS2Mouse oldMouse(6,5);
 
-int angle = 0;
-
+int count = 0;
 int capitalism;
 int motorPin = 3;
-bool isNegative = false;
 bool isClicked = false;
-bool reverseMouse = false;
-
-long previousMillis = 0;  
-long interval = 1000; 
 
 void setup(){
+  Serial.begin(9600); 
   pinMode(motorPin, OUTPUT);
-  Serial.begin(9600);  
-  
-  while(Serial);
-
   oldMouse.begin();
   Mouse.begin();
 }
@@ -36,8 +27,6 @@ void loop() {
   uint8_t stat;
   int x,y;
   int newY;
-  
-  unsigned long currentMillis = millis();
   
   oldMouse.getPosition(stat,x,y);
 
@@ -54,21 +43,20 @@ void loop() {
   
   if (stat != 9) { isClicked = false; }
   
-  capitalism = Serial.read();
-  if (capitalism == 'x') {
-    digitalWrite(3, HIGH);
+  if (Serial.available() > 0) {
+    capitalism = Serial.read();
 
-    if (angle < 1) {
-      angle += 1;
-    }
-  } else {
-    if (millis() - previousMillis > interval) {
+    if (capitalism == 'x') {
+      digitalWrite(3, HIGH);
+      delay(400);
       digitalWrite(3, LOW);
-      previousMillis = millis(); 
+      
+      if (count < 1) {
+        Mouse.move(100,100,0);
+        count += 1;
+      } else {
+        count = 0;
+      }
     }
-    
-    angle = 0;
   }
-  
-  delay(5);  
 }
