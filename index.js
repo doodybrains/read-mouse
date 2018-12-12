@@ -43,6 +43,7 @@ function open() {
 function showPortOpen() {
   console.log('port open. Data rate: ' + myPort.baudRate);
   opened = true;
+  myPort.flush();
 }
 
 function showPortClose() {

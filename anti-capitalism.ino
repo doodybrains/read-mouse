@@ -22,6 +22,7 @@ const long interval = 300;
 void setup(){
   pinMode(motorPin, OUTPUT);
   Serial.begin(9600); 
+  Serial.flush();
   while (!Serial);
   
   oldMouse.begin();
@@ -29,42 +30,42 @@ void setup(){
 }
 
 void loop() {
-  uint8_t stat;
-  int x,y;
-  int newY;
 
-  unsigned long currentMillis = millis();
-  
-  oldMouse.getPosition(stat,x,y);
+    uint8_t stat;
+    int x,y;
+    int newY;
 
-  if (y < 0) { newY = abs(y); } 
-  if (y > 0) { newY = -y; }
-  if (y == 0) { newY = y; }
-  
-  Mouse.move(x, newY, 0);
-
-  if (stat == 9 && isClicked == false) {
-    Mouse.click();
-    isClicked = true;    
-  }
-  
-  if (stat != 9) { isClicked = false; }
-
-
-  if (Serial.available() > 0) {
-    capitalism = Serial.read();
-  }
+    unsigned long currentMillis = millis();
     
-  if (currentMillis - previousMillis >= interval) {
-    previousMillis = currentMillis;
+    oldMouse.getPosition(stat,x,y);
+  
+    if (y < 0) { newY = abs(y); } 
+    if (y > 0) { newY = -y; }
+    if (y == 0) { newY = y; }
+    
+    Mouse.move(x, newY, 0);
 
-    if (motorState == LOW && capitalism == 'x') {
-      motorState = HIGH;
-      capitalism = 'y';
-    } else {
-      motorState = LOW;
+    if (stat == 9 && isClicked == false) {
+      Mouse.click();
+      isClicked = true;    
+    }
+  
+    if (stat != 9) { isClicked = false; }
+    
+    if (Serial.available() > 0) {
+      capitalism = Serial.read();
     }
     
-    digitalWrite(3, motorState);
-  }
+    if (currentMillis - previousMillis >= interval) {
+      previousMillis = currentMillis;
+  
+      if (motorState == LOW && capitalism == 'x') {
+        motorState = HIGH;
+        capitalism = 'y';
+      } else {
+        motorState = LOW;
+      }
+      
+      digitalWrite(3, motorState);
+    }
 }
