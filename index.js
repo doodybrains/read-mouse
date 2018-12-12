@@ -8,7 +8,7 @@ var express = require('express');
 var server = express();	
 var myParser = require("body-parser");
 let myPort;
-
+const say = require('say');
 let opened = false;
 
 open();
@@ -18,9 +18,13 @@ server.listen(8080);
 
 server.use(myParser.urlencoded({extended : true}));
 
+let cost = 0;
+
 server.post("/posts", function(request, response) {
   if (myPort) {
     console.log(request.body.data);
+    cost++;
+    say.speak(`you just made this website ${cost} cents`);
     myPort.write('x');
   }
 });
@@ -50,6 +54,7 @@ function showPortClose() {
   console.log('port closed.');
   opened = false;
   open();
+  cost = 0;
 }
 
 function showError(error) {
